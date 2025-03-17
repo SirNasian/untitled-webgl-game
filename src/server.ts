@@ -2,7 +2,7 @@ import server from "./server/http-server";
 import env from "./server/environment-variables";
 
 import { WebSocket, WebSocketServer } from "ws";
-import { v4 as uuid } from "uuid";
+import { v4 as genUUID, parse as parseUUID } from "uuid";
 
 import { decode, encode, MessageType } from "./common/messages";
 
@@ -19,7 +19,7 @@ const generateClientID = (): number | null => {
 };
 
 new WebSocketServer({ server }).on("connection", (socket) => {
-	const token = uuid();
+	const token = parseUUID(genUUID());
 	const id = generateClientID();
 	
 	_clients[id] = { socket };

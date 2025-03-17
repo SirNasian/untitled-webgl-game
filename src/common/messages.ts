@@ -3,7 +3,7 @@ export enum MessageType {
 };
 
 interface BaseMessage {
-	token?: string,
+	token?: Uint8Array,
 	type: MessageType,
 }
 
@@ -17,8 +17,8 @@ export type Message = InitMessage;
 export const encode = (message: Message): ArrayBuffer | null => {
 	const buffer = new ArrayBuffer(getBufferSize(message.type));
 	const view = new DataView(buffer);
-	if (message.token) new TextEncoder().encode(message.token).forEach((byte, index) => view.setInt8(index, byte));
-	view.setInt8(36, message.type);
+	if (message.token) message.token.forEach((byte, index) => view.setUint8(index, byte));
+	view.setUint8(16, message.type);
 
 	switch (message.type) {
 		case MessageType.INIT: return encodeInitMessage(buffer, message as InitMessage);
@@ -27,8 +27,8 @@ export const encode = (message: Message): ArrayBuffer | null => {
 };
 
 export const decode = (buffer: ArrayBuffer): Message | null => {
-	const token = new TextDecoder().decode(buffer.slice(0, 36));
-	const type = new DataView(buffer).getInt8(36) as MessageType;
+	const token = new Uint8Array(buffer.slice(0, 16));
+	const type = new DataView(buffer).getUint8(16) as MessageType;
 	if (!Object.values(MessageType).includes(type))
 		return null;
 
@@ -40,18 +40,18 @@ export const decode = (buffer: ArrayBuffer): Message | null => {
 
 const getBufferSize = (type: MessageType): number => {
 	switch (type) {
-		case MessageType.INIT: return 73;
+		case MessageType.INIT: return 18;
 		default: return 0;
 	}
 };
 
 const encodeInitMessage = (buffer: ArrayBuffer, message: InitMessage): ArrayBuffer => {
 	const view = new DataView(buffer);
-	view.setUint8(37, message.id);
+	view.setUint8(17, message.id);
 	return buffer;
 };
 
 const decodeInitMessage = (buffer: ArrayBuffer, message: BaseMessage): InitMessage => ({
 	...message,
-	id: new DataView(buffer).getUint8(37),
+	id: new DataView(buffer).getUint8(17),
 });

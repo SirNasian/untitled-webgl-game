@@ -8,7 +8,7 @@ export const connect = ({
 	onInit,
 }: {
 	url: string;
-	onInit: (token: string, id: number) => void;
+	onInit: (token: Uint8Array | null, id: number) => void;
 }): Connection => {
 	const socket = new WebSocket(url);
 
@@ -16,7 +16,7 @@ export const connect = ({
 		const message = decode(await data.arrayBuffer());
 
 		switch (message.type) {
-			case MessageType.INIT: return onInit(message.token ?? "", message.id);
+			case MessageType.INIT: return onInit(message.token ?? null, message.id);
 		}
 	});
 
