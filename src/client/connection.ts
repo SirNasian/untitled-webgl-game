@@ -8,7 +8,7 @@ export const connect = ({
 	onInit,
 }: {
 	url: string;
-	onInit: (token: string, id: string) => void;
+	onInit: (token: string, id: number) => void;
 }): Connection => {
 	const socket = new WebSocket(url);
 

@@ -1,24 +1,34 @@
 import server from "./server/http-server";
-import vars from "./server/environment-variables";
+import env from "./server/environment-variables";
 
 import { WebSocket, WebSocketServer } from "ws";
 import { v4 as uuid } from "uuid";
 
 import { decode, encode, MessageType } from "./common/messages";
 
-const _sockets: Record<string, WebSocket> = {};
+interface Client {
+	socket: WebSocket;
+}
+
+const _clients: Record<string, Client> = {};
+
+const generateClientID = (): number | null => {
+	for (let i = 0; i < env.MAX_PLAYERS; i++)
+		if (!_clients[i]) return i;
+	return null;
+};
 
 new WebSocketServer({ server }).on("connection", (socket) => {
 	const token = uuid();
-	const id = uuid();
+	const id = generateClientID();
 	
-	_sockets[id] = socket;
-	console.log(`${id} CONNECTED`);
+	_clients[id] = { socket };
+	console.log(`CLIENT_${id} CONNECTED`);
 	socket.send(encode({ type: MessageType.INIT, token, id }));
 
 	socket.on("close", () => {
-		delete _sockets[id];
-		console.log(`${id} DISCONNECTED`);
+		delete _clients[id];
+		console.log(`CLIENT_${id} DISCONNECTED`);
 	});
 
 	socket.on("message", (data: Buffer) => {
@@ -28,4 +38,4 @@ new WebSocketServer({ server }).on("connection", (socket) => {
 	});
 });
 
-server.listen(3000, () => console.log(vars));
+server.listen(3000, () => console.log(env));

@@ -9,7 +9,7 @@ interface BaseMessage {
 
 export interface InitMessage extends BaseMessage {
 	type: MessageType.INIT,
-	id: string,
+	id: number,
 }
 
 export type Message = InitMessage;
@@ -47,11 +47,11 @@ const getBufferSize = (type: MessageType): number => {
 
 const encodeInitMessage = (buffer: ArrayBuffer, message: InitMessage): ArrayBuffer => {
 	const view = new DataView(buffer);
-	new TextEncoder().encode(message.id).forEach((byte, index) => view.setInt8(37+index, byte));
+	view.setUint8(37, message.id);
 	return buffer;
 };
 
 const decodeInitMessage = (buffer: ArrayBuffer, message: BaseMessage): InitMessage => ({
 	...message,
-	id: new TextDecoder().decode(buffer.slice(37, 73))
+	id: new DataView(buffer).getUint8(37),
 });
