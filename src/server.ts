@@ -13,7 +13,7 @@ interface Client {
 const _clients: Record<string, Client> = {};
 
 const generateClientID = (): number | null => {
-	for (let i = 0; i < env.MAX_PLAYERS; i++)
+	for (let i = 0; i < env.MAX_CLIENTS; i++)
 		if (!_clients[i]) return i;
 	return null;
 };
