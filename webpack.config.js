@@ -13,6 +13,7 @@ const generateBundle = ({ entry, target, output_filename, output_directory }) =>
 		],
 	},
 	resolve: { extensions: [".ts", ".js"] },
+	externals: ["bufferutil", "utf-8-validate"],
 	output: { filename: output_filename, path: output_directory },
 })
 
