@@ -2,7 +2,6 @@ import server from "./server/http-server";
 import env from "./server/environment-variables";
 
 import { WebSocket, WebSocketServer } from "ws";
-import { v4 as genUUID, parse as parseUUID } from "uuid";
 
 import { decode, encode, MessageType } from "./common/messages";
 
@@ -10,7 +9,7 @@ interface Client {
 	socket: WebSocket;
 }
 
-const _clients: Record<string, Client> = {};
+const _clients: Record<number, Client> = {};
 
 const generateClientID = (): number | null => {
 	for (let i = 0; i < env.MAX_CLIENTS; i++)
@@ -19,12 +18,11 @@ const generateClientID = (): number | null => {
 };
 
 new WebSocketServer({ server }).on("connection", (socket) => {
-	const token = parseUUID(genUUID());
 	const id = generateClientID();
 	
 	_clients[id] = { socket };
 	console.log(`CLIENT_${id} CONNECTED`);
-	socket.send(encode({ type: MessageType.INIT, token, id }));
+	socket.send(encode({ type: MessageType.INIT, id }));
 
 	socket.on("close", () => {
 		delete _clients[id];
