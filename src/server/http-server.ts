@@ -10,6 +10,9 @@ export default http.createServer((req, res) => {
 	if (fs.existsSync(filepath) && fs.statSync(filepath).isDirectory())
 		filepath = path.join(filepath, 'index.html');
 
+	if (filepath.endsWith(".js"))
+		res.setHeader("Content-Type", "text/javascript");
+
 	fs.readFile(filepath, (err, data) => {
 		err
 			? res.writeHead(404, { "Content-Type": "text/plain" }).end("404 Not Found")
