@@ -1,3 +1,6 @@
+
+let _program: WebGLProgram = null;
+
 export interface ShaderProgram {
 	getAttribLocation: (name: string) => GLint;
 	use: () => void;
@@ -20,7 +23,7 @@ export const createShaderProgram = (
 
 	return {
 		getAttribLocation,
-		use: () => gl.useProgram(program),
+		use: () => (_program === program) || gl.useProgram(_program = program),
 	};
 };
 

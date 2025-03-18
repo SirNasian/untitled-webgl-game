@@ -1,4 +1,5 @@
 import { connect } from "./client/connection";
+import { createMesh } from "./client/mesh";
 import { createShaderProgram, ShaderProgram } from "./client/shader";
 
 let _id: number = -1;
@@ -10,6 +11,24 @@ const connection = connect({
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const gl = canvas.getContext("webgl2");
+
+new ResizeObserver(() => {
+	canvas.width = canvas.clientHeight;
+	canvas.height = canvas.clientHeight;
+	gl.viewport(0, 0, canvas.width, canvas.height);
+}).observe(canvas);
+
+const mesh = createMesh(
+	gl,
+	new Float32Array([
+		-0.5, -0.5, 0.0,
+		 0.5, -0.5, 0.0,
+		 0.0,  0.5, 0.0,
+	]),
+	new Uint32Array([
+		0, 1, 2,
+	]),
+);
 
 const init = async () => {
 	const [vertex_source, fragment_source] = await Promise.all([
@@ -26,6 +45,8 @@ const render = (shader: ShaderProgram) => {
 	gl.clearColor(0, 0, 0, 1);
 
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+	mesh.render(shader);
 
 	requestAnimationFrame(() => render(shader));
 };
