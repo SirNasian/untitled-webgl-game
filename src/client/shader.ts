@@ -1,8 +1,8 @@
-
 let _program: WebGLProgram = null;
 
 export interface ShaderProgram {
 	getAttribLocation: (name: string) => GLint;
+	setUniformMatrix4fv: (name: string, data: Float32Array) => void;
 	use: () => void;
 }
 
@@ -15,14 +15,27 @@ export const createShaderProgram = (
 	const program = compileProgram(gl, vertex_source, fragment_source, name);
 
 	const attribute_locations: Record<string, GLint> = {};
-	const getAttribLocation = (name: string) => {
+	const getAttribLocation = (name: string): GLint => {
 		if (!attribute_locations[name])
 			attribute_locations[name] = gl.getAttribLocation(program, name);
 		return attribute_locations[name];
-	}
+	};
+
+	const uniform_locations: Record<string, WebGLUniformLocation> = {};
+	const getUniformLocation = (name: string): WebGLUniformLocation => {
+		if (!uniform_locations[name])
+			uniform_locations[name] = gl.getUniformLocation(program, name);
+		return uniform_locations[name];
+	};
+
+	const setUniformMatrix4fv = (name: string, data: Float32Array): void => {
+		const location = getUniformLocation(name);
+		gl.uniformMatrix4fv(location, true, data);
+	};
 
 	return {
 		getAttribLocation,
+		setUniformMatrix4fv,
 		use: () => (_program === program) || gl.useProgram(_program = program),
 	};
 };

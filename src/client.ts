@@ -1,6 +1,7 @@
 import { connect } from "./client/connection";
 import { createMesh } from "./client/mesh";
 import { createShaderProgram, ShaderProgram } from "./client/shader";
+import * as mat4 from "./common/mat4x4";
 
 let _id: number = -1;
 
@@ -46,7 +47,7 @@ const render = (shader: ShaderProgram) => {
 
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	mesh.render(shader);
+	mesh.render(shader, mat4.identity());
 
 	requestAnimationFrame(() => render(shader));
 };

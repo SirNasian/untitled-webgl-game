@@ -3,7 +3,7 @@ import { ShaderProgram } from "./shader";
 let _vao: WebGLVertexArrayObject = null;
 
 export interface Mesh {
-	render: (shader: ShaderProgram) => void;
+	render: (shader: ShaderProgram, vertex_transform: Float32Array) => void;
 }
 
 export const createMesh = (
@@ -24,8 +24,9 @@ export const createMesh = (
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-	const render = (shader: ShaderProgram): void => {
+	const render = (shader: ShaderProgram, vertex_transform: Float32Array): void => {
 		shader.use();
+		shader.setUniformMatrix4fv("vertex_transform", vertex_transform);
 		(_vao === vao) || gl.bindVertexArray(_vao = vao);
 		gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0);
 	};
