@@ -2,6 +2,7 @@ let _program: WebGLProgram = null;
 
 export interface ShaderProgram {
 	getAttribLocation: (name: string) => GLint;
+	setUniform1i: (name: string, value: number) => void;
 	setUniformMatrix4fv: (name: string, data: Float32Array) => void;
 	use: () => void;
 }
@@ -28,6 +29,11 @@ export const createShaderProgram = (
 		return uniform_locations[name];
 	};
 
+	const setUniform1i = (name: string, value: GLint): void => {
+		const location = getUniformLocation(name);
+		gl.uniform1i(location, value);
+	};
+
 	const setUniformMatrix4fv = (name: string, data: Float32Array): void => {
 		const location = getUniformLocation(name);
 		gl.uniformMatrix4fv(location, true, data);
@@ -35,6 +41,7 @@ export const createShaderProgram = (
 
 	return {
 		getAttribLocation,
+		setUniform1i,
 		setUniformMatrix4fv,
 		use: () => (_program === program) || gl.useProgram(_program = program),
 	};
