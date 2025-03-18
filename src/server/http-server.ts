@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as http from "http";
 import * as path from "path";
 
-export default http.createServer((req, res) => {
+export default http.createServer(async (req, res) => {
 	if (req.url === "/favicon.ico")
 		return res.writeHead(200).end();
 
@@ -10,12 +10,13 @@ export default http.createServer((req, res) => {
 	if (fs.existsSync(filepath) && fs.statSync(filepath).isDirectory())
 		filepath = path.join(filepath, 'index.html');
 
+	const data = fs.readFileSync(filepath);
+
 	if (filepath.endsWith(".js"))
 		res.setHeader("Content-Type", "text/javascript");
 
-	fs.readFile(filepath, (err, data) => {
-		err
-			? res.writeHead(404, { "Content-Type": "text/plain" }).end("404 Not Found")
-			: res.writeHead(200).end(data);
-	});
+	else if (filepath.endsWith(".png"))
+		res.setHeader("Content-Type", "image/png");
+
+	res.writeHead(200).end(data);
 });
