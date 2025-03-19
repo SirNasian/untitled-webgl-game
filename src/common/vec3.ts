@@ -19,3 +19,17 @@ export const normalize = (a: Vec3): Vec3 => {
 		? create(a[0]/length, a[1]/length, a[2]/length)
 		: create(0, 0, 0);
 };
+
+export const add = (a: Vec3, b: Vec3): Vec3 =>
+	new Float32Array([
+		a[0] + b[0],
+		a[1] + b[1],
+		a[2] + b[2],
+	]) as Vec3;
+
+export const subtract = (a: Vec3, b: Vec3): Vec3 =>
+	new Float32Array([
+		a[0] - b[0],
+		a[1] - b[1],
+		a[2] - b[2],
+	]) as Vec3;
