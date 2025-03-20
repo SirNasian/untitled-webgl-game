@@ -1,3 +1,5 @@
+import * as vec3 from "./vec3";
+
 export type Mat4 = Float32Array & { readonly __type: "Mat4" };
 
 export const identity = () => new Float32Array([
@@ -85,3 +87,15 @@ export const multiply = (a: Mat4, b: Mat4): Mat4 => {
 
 	return c;
 };
+
+export const lookAt = (from: vec3.Vec3, to: vec3.Vec3, up: vec3.Vec3): Mat4 => {
+	const z = vec3.normalize(vec3.subtract(from, to));
+	const x = vec3.normalize(vec3.cross(up, z));
+	const y = vec3.normalize(vec3.cross(z, x));
+	return new Float32Array([
+		x[0], x[1], x[2], -vec3.dot(x, from),
+		y[0], y[1], y[2], -vec3.dot(y, from),
+		z[0], z[1], z[2], -vec3.dot(z, from),
+		0, 0, 0, 1,
+	]) as Mat4;
+}
